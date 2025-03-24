@@ -1,0 +1,16 @@
+spring:
+  jpa:
+    enabled: false  # Deshabilita la configuración de JPA
+  datasource:
+    url: ""  # Asegura que no haya URL configurada
+    driver-class-name: ""  # Asegura que no haya driver configurado
+    username: ""  # Se asegura de que no haya un nombre de usuario configurado
+    password: ""  # Se asegura de que no haya una contraseña configurada
+  mongodb:
+    database: productosDB
+    port: 27017
+    host: ms-mongodb-service
+  application:
+    name: ms-producto-mongo
+server:
+  port: 8282  # Puerto en el que se ejecuta la aplicación

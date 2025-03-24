@@ -1,0 +1,18 @@
+# Usar la imagen oficial de MongoDB
+FROM mongo:latest
+
+# Crear un directorio para los logs de MongoDB
+RUN mkdir -p /var/log/mongodb
+
+# Copiar el script de inicialización al contenedor
+COPY init-db.js /docker-entrypoint-initdb.d/
+
+# Exponer el puerto 27017
+EXPOSE 27017
+
+# Establecer un healthcheck para asegurarse de que MongoDB está funcionando
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+  CMD mongo --eval "db.runCommand({ connectionStatus: 1 })" || exit 1
+
+# Comando para iniciar el servicio de MongoDB sin --fork (el contenedor maneja la ejecución en segundo plano)
+CMD ["mongod", "--bind_ip_all", "--logpath", "/var/log/mongodb/mongod.log", "--logappend"]
