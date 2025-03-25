@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc
+  namespace: ms-producto-namespace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi  # Solicitar espacio para los datos de MongoDB
+  storageClassName: standard  # Debe coincidir con la storageClassName del PersistentVolume

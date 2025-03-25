@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-mongodb-deployment
+  namespace: ms-producto-namespace
+  labels:
+    app: ms-mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-mongodb
+  template:
+    metadata:
+      labels:
+        app: ms-mongodb
+    spec:
+      containers:
+        - name: ms-mongodb
+          image: raulkkonen/ms-mongodb-svc:v2
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db  # Ruta donde MongoDB almacenará los datos
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: mongo-pvc  # PersistentVolumeClaim que se usará
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-mongodb-service
+  namespace: ms-producto-namespace
+spec:
+  selector:
+    app: ms-mongodb
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+  clusterIP: None  # Hace que MongoDB tenga una IP estática y que los pods puedan comunicarse entre ellos fácilmente
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-pv
+  namespace: ms-producto-namespace
+spec:
+  capacity:
+    storage: 10Gi  # Tamaño del volumen persistente
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard  # Puede variar según tu configuración de Kubernetes
+  hostPath:
+    path: /mnt/data/mongo  # Directorio en el host donde se almacenarán los datos de MongoDB
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc
+  namespace: ms-producto-namespace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi  # Solicitar espacio para los datos de MongoDB
+  storageClassName: standard  # Debe coincidir con la storageClassName del PersistentVolume

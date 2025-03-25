@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-pv
+  namespace: ms-producto-namespace
+spec:
+  capacity:
+    storage: 10Gi  # Tamaño del volumen persistente
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard  # Puede variar según tu configuración de Kubernetes
+  hostPath:
+    path: /mnt/data/mongo  # Directorio en el host donde se almacenarán los datos de MongoDB
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc
+  namespace: ms-producto-namespace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi  # Solicitar espacio para los datos de MongoDB
+  storageClassName: standard  # Debe coincidir con la storageClassName del PersistentVolume
